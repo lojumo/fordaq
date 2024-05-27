@@ -24,7 +24,7 @@ def parse_arguments() -> Namespace:
         help="Folder containing the images to be stitched.",
     )
     parser.add_argument(
-        "--output", "-o", type=str, required=True,
+        "--output", "-o", type=str,
         help="Folder where the output is saved.", default=".",
     )
     parser.add_argument(

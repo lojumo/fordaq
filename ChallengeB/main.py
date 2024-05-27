@@ -41,8 +41,8 @@ def training(
     # Get datasets
     AUTOTUNE = tf.data.AUTOTUNE
 
-    training_ds = get_dataset(training_data, image_size, batch_size)
-    validation_ds = get_dataset(validation_data, image_size, batch_size)
+    training_ds, _ = get_dataset(training_data, image_size, batch_size)
+    validation_ds, _ = get_dataset(validation_data, image_size, batch_size)
 
     classes = training_ds.class_names
 
@@ -99,13 +99,20 @@ def evaluate(model: tf.keras.Model, classes: List[str], test_folder: Path, image
     if not test_folder.exists():
         raise FileNotFoundError(f"Provided directory do not exist, {test_folder}")
 
-    test_ds = get_dataset(test_folder, image_size, 5)
+    predicted_labels: List[int] = []
+    labels: List[int] = []
 
+    test_ds, nb_images = get_dataset(test_folder, image_size, 1)
+    ds = iter(test_ds)
 
-    predictions = model.predict(test_ds)
-    scores = tf.nn.softmax(predictions)
-    predicted_labels = np.argmax(scores)
-    labels = test_ds.labels
+    for _ in range(nb_images):
+        image, label = next(ds)
+        raw_predictions = model.predict(image)
+        scores = tf.nn.softmax(raw_predictions[0])
+        predictions = np.argmax(scores)
+
+        labels.append(label)
+        predicted_labels.append(predictions)
 
     matrix_values = confusion_matrix(y_true=labels, y_pred=predicted_labels)
 
@@ -122,8 +129,8 @@ def evaluate(model: tf.keras.Model, classes: List[str], test_folder: Path, image
     plt.title('Confusion Matrix\n', fontsize = 18, color = 'darkblue')
     plt.ylabel('True label', fontsize = 14)
     plt.xlabel('Predicted label', fontsize = 14)
-    plt.show()
-    plt.savefig("./confusion_matrix.png")
+    # plt.show()
+    plt.savefig("./confusion_matrix.jpg")
 
 
 def main():
@@ -145,7 +152,7 @@ def main():
 
     model, classes = training(image_size, arguments.epochs, arguments.lr, arguments.batch_size, arguments.train_data, arguments.val_data)
 
-    if str(arguments.test_data) > 0:
+    if len(str(arguments.test_data)) > 0:
         evaluate(model, classes, arguments.test_data, image_size)
 
 

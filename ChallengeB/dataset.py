@@ -18,7 +18,7 @@ def get_dataset(
     batch_size: int,
     seed: int = 123,
     verbose: bool = True,
-) -> tf.data.Dataset:
+) -> Tuple[tf.data.Dataset, int]:
     """Initialize the dataset from the provided directory.
 
     Args:
@@ -29,7 +29,7 @@ def get_dataset(
         verbose (bool, optional): Whether to show additional information. Defaults to True.
 
     Returns:
-        tf.data.Dataset: Initialized dataset.
+        (tf.data.Dataset, int): Initialized dataset, number of images.
 
     Raises:
         FileNotFoundError: if dataset directory do not exist.
@@ -37,8 +37,10 @@ def get_dataset(
     if not dataset_directory.exists():
         raise FileNotFoundError(f"Provided directory do not exist, {dataset_directory}")
 
+    nb_images: int = len(list(dataset_directory.glob('*/*.jpg')))
+
     if verbose:
-        logging.info(f"Number of images: {len(list(dataset_directory.glob('*/*.jpg')))}")
+        logging.info(f"Number of images: {nb_images}")
 
     ds = image_dataset_from_directory(
         dataset_directory,
@@ -52,7 +54,7 @@ def get_dataset(
         class_names = ds.class_names
         logging.info(f"{len(class_names)} classes available: {class_names}") 
 
-    return ds
+    return ds, nb_images
 
 
 def visualize_dataset(ds: tf.data.Dataset) -> None:
