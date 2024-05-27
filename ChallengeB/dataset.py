@@ -22,7 +22,7 @@ def get_dataset(
     """Initialize the dataset from the provided directory.
 
     Args:
-        dataset_directory (str): Dataset split 
+        dataset_directory (Path): Dataset split.
         image_size (Tuple): Size of the image.
         batch_size (int): Batch size to be used.
         seed (int, optional): Seed for randomness. Defaults to 123.
@@ -36,9 +36,9 @@ def get_dataset(
     """
     if not dataset_directory.exists():
         raise FileNotFoundError(f"Provided directory do not exist, {dataset_directory}")
-    
+
     if verbose:
-        logging.info(f"Number of images: {len(dataset_directory.glob("*/*.jpg"))}")
+        logging.info(f"Number of images: {len(list(dataset_directory.glob('*/*.jpg')))}")
 
     ds = image_dataset_from_directory(
         dataset_directory,
@@ -63,7 +63,7 @@ def visualize_dataset(ds: tf.data.Dataset) -> None:
     """
     # Get classes
     class_names = ds.class_names
-    
+
     plt.figure(figsize=(10, 10))
     for images, labels in ds.take(1):
         for idx in range(9):

@@ -159,5 +159,8 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-**/*.jpg
-**/*.png
+species_ds
+!species_ds/*.zip
+
+ChallengeA/to_stitch
+ChallengeA/to_stitch2

@@ -72,7 +72,7 @@ def stitch_images(folder: str, image_filenames: List[str], mask_filenames: List[
         3. Homography estimation: Estimating the transformation (e.g., rotation, scaling, translation) that aligns the input images.
         4. Warping: Applying the estimated transformation to the input images.
         5. Blending: Combining the warped images into a single seamless output image.
-    
+
     Args:
         folder (str): Folder containing the images/masks.
         image_filenames (List[str]): List of images to stitch.
@@ -85,16 +85,16 @@ def stitch_images(folder: str, image_filenames: List[str], mask_filenames: List[
 
     # Obtain cropped image based on mask
     logging.info("Loading images & masks...")
-    for image_filename, mask_filename in zip(image_filenames, mask_filenames):              
+    for image_filename, mask_filename in zip(image_filenames, mask_filenames):
         # Check image has corresponding mask
         if get_index(image_filename) == get_index(mask_filename, True):
             # Read image
             image = cv2.imread(os.path.join(folder, image_filename), cv2.IMREAD_COLOR)
-            
+
             # Read mask
             mask = cv2.imread(os.path.join(folder, mask_filename), cv2.IMREAD_UNCHANGED)
             rect = cv2.boundingRect(mask)
-            
+
             # Create cropped image based on mask
             image_cropped = image[rect[1]:(rect[1]+rect[3]), rect[0]:(rect[0]+rect[2])]
 
@@ -116,4 +116,3 @@ def stitch_images(folder: str, image_filenames: List[str], mask_filenames: List[
         return stitched_image
     else:
         raise ValueError(f"Stitching failed: {status}")
-        
